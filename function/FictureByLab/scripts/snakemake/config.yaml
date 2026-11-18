@@ -1,0 +1,34 @@
+# config.yaml
+
+# batch
+batch_size: 500
+batch_buff: 30
+key: "Count" ## UMI count colomn
+major_axis: "Y" ## major axies
+
+# hexagon
+hex_width: 12 ## hexagon edge length in um
+min_ct_per_unit: 20 ## filter out total count < 50 in hexagons
+sliding_step: 2 ## hexagon grid slide step length
+
+# fit model
+train_nEpoch: 10 ## n_Epoch
+min_ct_per_feature: 10
+epoch_id_length: 2
+test_split: 0.1
+pseudo: True
+palette: True
+R: 10 ## range of neighbors
+
+# plot
+cmap_name: "turbo"
+
+# slda decode
+fit_width: 10
+anchor_res: 4
+min_ct_per_fit: 10
+topk: 3
+bsize: 2000
+scale: 100
+max_pval_output: "1e-3"
+min_fold_output: 1.5
