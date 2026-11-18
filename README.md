@@ -28,8 +28,8 @@ Analyses use R and Python 3.11. CPU and memory requirements depend on dataset si
 
 ### Python Packages and Other Tools
 
-- **Scanpy**, **AnnData**, **NumPy**, **pandas**, **SciPy**, **scikit-learn**, **Matplotlib**
-- **Cell Ranger**, **Open-ST**, **Spacemake**, **FICTURE**
+- Scanpy, AnnData, NumPy, pandas, SciPy**, scikit-learn, Matplotlib
+- Cell Ranger, Open-ST, Spacemake, FICTURE
 
 Versions reported in the manuscript: Cell Ranger 6.1.2, Open-ST tools 0.2.3, Spacemake 0.8.0, FICTURE 0.0.5.0, Seurat 5.5.0, inferCNV 1.26.0, CytoTRACE 0.3.3, CytoSignal 0.2.2, and CellChat 2.2.0.
 
