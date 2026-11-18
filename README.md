@@ -44,7 +44,7 @@ Versions reported in the manuscript: Cell Ranger 6.1.2, Open-ST tools 0.2.3, Spa
 
 Data identifiers reported in the manuscript:
 
-- **Raw sequencing data:** GSA-Human accession [HRA035199](https://ngdc.cncb.ac.cn/gsa-human/browse/HRA035199)
+- **Raw sequencing data:** GSA-Human accession [PRJCA080529](https://ngdc.cncb.ac.cn/)
 - **Processed scRNA-seq and spatial data:** Zenodo DOI [10.5281/zenodo.24123314](https://doi.org/10.5281/zenodo.24123314)
 
 ## Notes
