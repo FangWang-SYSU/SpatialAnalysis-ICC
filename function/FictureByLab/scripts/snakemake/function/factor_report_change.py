@@ -4,9 +4,6 @@ import pandas as pd
 import argparse
 import sys, os, copy, gc, re, gzip, pickle, argparse, logging, warnings
 import numpy as np
-
-
-
 from jinja2 import Environment, FileSystemLoader
 from importlib import resources as impresources
 
@@ -16,9 +13,9 @@ import ficture.scripts
 def factor_report_change(_args):
 
     parser = argparse.ArgumentParser(prog="factor_report_change")
-    parser.add_argument('--factor_info', type=str, required=True, help='包含 Factor 和 TopGene_pval 等信息的输入文件')
-    parser.add_argument('--ref_gene', type=str, required=True, help='包含 cluster 和 gene 信息的基因矩阵文件')
-    parser.add_argument('--outpath', type=str, required=True, help='输出文件路径')
+    parser.add_argument('--factor_info', type=str, required=True, help='')
+    parser.add_argument('--ref_gene', type=str, required=True, help='')
+    parser.add_argument('--outpath', type=str, required=True, help='')
     parser.add_argument('--pref', type=str, help='')
     parser.add_argument('--column_name', type=str, default='TopGene_pval', help='Column name to use (default: TopGene_pval)')
     parser.add_argument('--output_pref', type=str, default='', help='')
@@ -52,10 +49,10 @@ def factor_report_change(_args):
 
         def find_intersection(row):
             if isinstance(row[column_name], str):
-                top_genes = set(row[column_name].split(", "))  # 拆分基因列表
+                top_genes = set(row[column_name].split(", "))  
                 intersection = {gene: marker_genes[gene] for gene in top_genes if gene in marker_genes} 
                 sorted_intersection = sorted(intersection.items(), key=lambda x: x[1])
-                return ", ".join(f"{gene}({index})" for gene, index in sorted_intersection) if sorted_intersection else " "  # 返回格式化结果
+                return ", ".join(f"{gene}({index})" for gene, index in sorted_intersection) if sorted_intersection else " " 
             return ""
 
         df[inter_gene_col] = df.apply(find_intersection, axis=1)
@@ -82,8 +79,6 @@ def factor_report_change(_args):
     with open(f, "w") as html_file:
         html_file.write(html_output)
 
-
-# 只有当该脚本直接运行时才执行
 if __name__ == "__main__":
     import sys
     factor_report_change(sys.argv[1:])
