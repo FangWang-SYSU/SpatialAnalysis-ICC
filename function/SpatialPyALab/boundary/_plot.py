@@ -10,8 +10,7 @@ def plot_layers_boundaries(layer_adata,
  
     import matplotlib.pyplot as plt
     from shapely.geometry import MultiPolygon,Polygon
-    
-    ### 限制范围
+
     x_min, x_max = layer_adata.obsm['spatial_um'][:, 0].min(), layer_adata.obsm['spatial_um'][:, 0].max()
     y_min, y_max = layer_adata.obsm['spatial_um'][:, 1].min(), layer_adata.obsm['spatial_um'][:, 1].max()
     boundary = Polygon([(x_min, y_min), (x_min, y_max), (x_max, y_max), (x_max, y_min)])
