@@ -4,7 +4,7 @@ Analysis code for integrated spatial transcriptomics, scRNA-seq, and TCR profili
 
 ## Project Description
 
-This project accompanies the study **Mapping spatial transcriptional plasticity to clinical immune signatures in intrahepatic cholangiocarcinoma**. The main analyses include:
+This project accompanies the study **Mapping spatial ecosystem programs and clonal heterogeneity to immunotherapy response in intrahepatic cholangiocarcinoma**. The main analyses include:
 
 - Spatial data processing, cell-type annotation, and visualization
 - Identification and scoring of spatial ecosystem programs (SEPs)
