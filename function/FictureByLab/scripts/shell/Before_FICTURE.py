@@ -67,7 +67,7 @@ def process_h5ad_to_transcripts(_args):
     transcripts_file = os.path.join(output_dir, 'transcripts.tsv.gz')
     df_transcripts.to_csv(transcripts_file, sep='\t', index=False, compression='gzip')
 
-    # 计算 feature.clean.tsv.gz 文件
+    # feature.clean.tsv.gz 
     feature = df_transcripts.groupby('gene').agg({'Count': 'sum'}).reset_index()
 
     # Filter out specified dummy genes
@@ -79,7 +79,6 @@ def process_h5ad_to_transcripts(_args):
 
     return transcripts_file, coord_file, feature_clean_file
 
-# 示例调用
 if __name__ == '__main__':
   
     try:
