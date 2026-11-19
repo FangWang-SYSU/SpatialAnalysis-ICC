@@ -175,7 +175,7 @@ while IFS=$'\t' read -r r_key r_val; do
         xmax) xmax=$(echo "${r_val} / ${mu_scale}" | bc -l) ;;
         ymin) ymin=$(echo "${r_val} / ${mu_scale}" | bc -l) ;;
         ymax) ymax=$(echo "${r_val} / ${mu_scale}" | bc -l) ;;
-        *) export "${r_key}"="${r_val}" ;;  # 其他键值对直接导出为环境变量
+        *) export "${r_key}"="${r_val}" ;;  
     esac
 done < ${coor}
 echo -e "${xmin}, ${xmax}; ${ymin}, ${ymax}"
