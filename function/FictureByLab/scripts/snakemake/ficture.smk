@@ -7,10 +7,8 @@ configfile: "scripts/snakemake/config.yaml"
 REQUIRED = ["h5ad_file", "root_dir"]
 missing = [k for k in REQUIRED if k not in config]
 if missing:
-    raise ValueError(f"缺少必需参数: {missing}，请用 --config k=v 传入")
-
-
-# === 可选项：这里才给默认 ===
+    raise ValueError(f"param missing {missing}，--config k=v")
+ 
 config.setdefault("coord_key",  "spatial")
 config.setdefault("figure_bg",  "000000")
 config.setdefault("mu_scale",   1.0)
