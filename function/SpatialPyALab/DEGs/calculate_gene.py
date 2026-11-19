@@ -3,17 +3,7 @@ import numpy as np
 from scipy.sparse import issparse
 
 def compute_gene_expression_ratio(adata, group_key="cell_type", min_cells=1):
-    """
-    计算每个基因在每个细胞类型中的表达比例。
 
-    Parameters:
-        adata: AnnData 对象，要求 adata.obs[group_key] 包含细胞类型信息
-        group_key: str，用于分组的列名
-        min_cells: int，最少包含细胞数的组才会被考虑
-
-    Returns:
-        pd.DataFrame: 行是基因，列是细胞类型，值是表达比例（0~1）
-    """
     gene_names = adata.var_names
     group_labels = adata.obs[group_key].unique()
 
@@ -31,26 +21,13 @@ def compute_gene_expression_ratio(adata, group_key="cell_type", min_cells=1):
         else:
             expr = sub_adata.X
 
-        # 非零表达细胞数除以总数
         expr_ratio = (expr > 0).sum(axis=0) / sub_adata.n_obs
         result[label] = expr_ratio
 
     return result
 
 def filter_genes_by_expression_ratio(expr_ratio_df, min_ratio=0.01, fold_change=2):
-    """
-    筛选满足以下条件的基因：
-    - 在至少一个细胞类型中表达比例 > min_ratio
-    - 且该比例为所有其他细胞类型表达比例的 fold_change 倍以上
 
-    Parameters:
-        expr_ratio_df: DataFrame，行是基因，列是细胞类型，值是表达比例
-        min_ratio: float，最低表达比例
-        fold_change: float，倍数阈值
-
-    Returns:
-        筛选后基因名的列表
-    """
     ratio_dict = {}
 
     for group in expr_ratio_df.columns:
@@ -70,17 +47,7 @@ def filter_genes_by_expression_ratio(expr_ratio_df, min_ratio=0.01, fold_change=
 import pandas as pd
 
 def extract_significant_degs(adata, logfc_thresh=1.0, pval_thresh=0.01):
-    """
-    从 adata.uns['rank_genes_groups'] 中提取显著差异基因。
-    
-    Parameters:
-        adata: AnnData 对象
-        logfc_thresh: float，logFC 阈值
-        pval_thresh: float，p 值阈值
 
-    Returns:
-        pd.DataFrame：包含 group, gene, logfc, pval 的显著基因表
-    """
     res = adata.uns['rank_genes_groups']
     groups = res['names'].dtype.names
     all_degs = []
@@ -102,19 +69,8 @@ def extract_significant_degs(adata, logfc_thresh=1.0, pval_thresh=0.01):
 
     return pd.concat(all_degs, ignore_index=True)
 
-
-
 def intersect_gene_sets(deg_df, ratio_dict):
-    """
-    将差异表达基因表与表达比例筛选结果取交集。
 
-    参数：
-        deg_df: pd.DataFrame，包含 group, gene, logfc, pval
-        ratio_dict: dict，{cell_type: set of genes}
-
-    返回：
-        dict: {cell_type: sorted list of intersected genes}
-    """
     deg_dict = (
         deg_df.groupby("group")["gene"]
         .apply(set)
@@ -129,10 +85,6 @@ def intersect_gene_sets(deg_df, ratio_dict):
     return intersect_dict
 
 
-
-
-
-
 import numpy as np
 
 def compute_cell_scores(
@@ -140,7 +92,7 @@ def compute_cell_scores(
     gene_dict, 
     score_names=None, 
     use_raw=True, 
-    method="mean"  # 可选："mean" 或 "nonzero_mean"
+    method="mean"  # options: "mean" or "nonzero_mean"
 ):
     if score_names is None:
         score_names = gene_dict.keys()
@@ -167,7 +119,7 @@ def compute_cell_scores(
 
         elif method == "nonzero_mean":
             if not isinstance(expr, np.ndarray):
-                expr = expr.toarray()  # 稀疏转密集
+                expr = expr.toarray() 
 
             nonzero_counts = (expr > 0).sum(axis=1)
             expr_sum = expr.sum(axis=1)
