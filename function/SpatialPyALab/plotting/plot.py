@@ -14,26 +14,20 @@ import matplotlib.pyplot as plt
 
 def find_optimal_df(D_max, alpha, max_iter=1000):
     from scipy.stats import chi2
-
-    # 处理自由度为0或v=1的情况
     if D_max < chi2.isf(alpha, 1):
         return 0
-
-    # 倍增法确定初始上界high
     high = 1
     while chi2.isf(alpha, high) <= D_max:
         high *= 2
-        # 防止无限循环，设置最大迭代次数
         max_iter -= 1
         if max_iter <= 0:
             raise ValueError("Exceeded maximum iterations while finding upper bound")
 
     low = high // 2
 
-    # 二分查找
-    max_iter = 1000  # 重置最大迭代次数
+    max_iter = 1000
     while low < high and max_iter > 0:
-        mid = (low + high + 1) // 2  # 向上取整
+        mid = (low + high + 1) // 2 
         q = chi2.isf(alpha, mid)
         if q <= D_max:
             low = mid
@@ -150,7 +144,6 @@ def plot_obs_histograms(adata, keys, bins=60, n_cols=4, show=False):
     
 # To be Modified
 def print_rich_log(log_path, console = Console()):
-    # 创建表格
     table = Table(title="STAR Genome Log", show_header=True, header_style="bold magenta")
     table.add_column("Category", style="dim", width=20)
     table.add_column("Details", style="cyan")
@@ -197,41 +190,32 @@ def print_rich_log(log_path, console = Console()):
     print_section("MULTI-MAPPING READS", sub_dictionary[2])
 
     print_section("UNMAPPED READS", sub_dictionary[3])
-
-    # 打印表格
     console.print(table)
 
 # To be Modified
 def print_rich_adata(adata, console = Console()):
     n_points, n_genes = adata.shape
 
-    # 创建表格
     table = Table(title=f"AnnData Structure: {n_points} points X {n_genes} genes", show_header=True, header_style="bold magenta")
     table.add_column("Category", style="dim", width=20)
     table.add_column("Description", style="cyan")
     table.add_column("Details", style="green")
 
-    # 添加obs信息
     obs_keys = ", ".join(adata.obs.keys())
     table.add_row("obs", "Stats information by cells", obs_keys)
     table.add_section()
 
-    # 添加var信息
     var_keys = ", ".join(adata.var.keys())
     table.add_row("var", "Stats information by genes", var_keys)
     table.add_section()
 
-    # 添加uns信息
     uns_keys = ", ".join(adata.uns.keys())
     table.add_row("uns", "Unstructured annotations", uns_keys)
     table.add_section()
-
-    # 添加obsm信息
     obsm_keys = ", ".join(adata.obsm.keys())
     table.add_row("obsm", "Spatial coordinates", obsm_keys)
     table.add_section()
 
-    # 打印表格
     console.print(table)
 
 # To be Modified
@@ -242,10 +226,8 @@ def print_rich_table(puck_path, console = Console()):
 
     n_rows = df.shape[0]
 
-    # 创建表格
     table = Table(title=f"Puck Barcode Files: {n_rows} tiles", show_header=True, header_style="bold magenta")
 
-    # 添加表头（排除不要的列）
     for col in df.columns:
         if col == 'puck_barcode_file_id':
             table.add_column(col, style = 'cyan', min_width = 25, justify='center')
@@ -254,12 +236,10 @@ def print_rich_table(puck_path, console = Console()):
         else:
             table.add_column(col, style = 'cyan', min_width = 14, justify='center')
 
-    # 添加数据到表格
     for row in df.itertuples(index=False):
         table.add_row(*map(str, row))
         table.add_section()
 
-    # 打印表格
     display(table)
 
 def draw_single_cluster(adata, cluster_id, key = 'leiden', fig_size = (6, 10), spot_size = 500, basis = 'spatial'):
@@ -322,7 +302,7 @@ def compare_two_cluster(adata, target, reference, groupby = None, key = None, x_
     def add_labels(indices, color):
         for i in indices:
             plt.text(
-                x=scores_values[i] + 0.5,  # 微调x位置防止重叠
+                x=scores_values[i] + 0.5,  
                 y=y_values[i],
                 s=genes[i],
                 color=color,
@@ -336,7 +316,6 @@ def compare_two_cluster(adata, target, reference, groupby = None, key = None, x_
     add_labels(black_indices, 'black')
     add_labels(purple_indices, 'purple')
 
-    # 添加图例
     legend_elements = [
         plt.Line2D([0], [0], marker='o', color='w', label=f'x > {x_interval[1]} ({len(red_indices)})',
                     markerfacecolor='red', markersize=8),
