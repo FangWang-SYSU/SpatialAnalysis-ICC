@@ -1,6 +1,6 @@
 # SpatialAnalysis-ICC
 
-A collection of analysis scripts for spatial transcriptomics, single-cell RNA-seq, and TCR data in intrahepatic cholangiocarcinoma (ICC).
+A collection of analysis scripts for intrahepatic cholangiocarcinoma (ICC).
 
 ## Project Description
 
