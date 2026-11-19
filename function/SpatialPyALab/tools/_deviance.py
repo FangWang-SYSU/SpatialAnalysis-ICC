@@ -24,8 +24,6 @@ def sparse_binomial_deviance(X: csr_matrix, sz: ndarray):
     
     # Calculate ll_sat
     ll_sat = term1 + term2
-    
-    # 计算零模型
     feature_sums = X.sum(axis=0).A1
     sz_sum = sz.sum()
     p = feature_sums / sz_sum
@@ -207,28 +205,6 @@ def _devianceFeature(
 
 
 def deviance(adata, fam = 'binomial', layer = None, batch = None, batch_key = None):
-    """
-    Calculate the deviation for the AnnData object and add the result to AnnData
-    
-    Parameters
-    ----------
-    adata : AnnData
-        Input AnnData object, assuming X or the specified layer is the count matrix (cells x genes)
-    fam : str, optional
-        Family of distributions, can be 'binomial' or 'poisson', default is 'binomial'
-    layer : str, optional
-        Use the specified layer instead of adata.X, default is None (use adata.X)
-    batch : array-like, optional
-        Batch information, default is None
-    batch_key : str, optional
-        Column name in adata.obs for specifying batch information, default is None
-    
-    Returns
-    -------
-    adata : AnnData
-        Input AnnData object with the deviance added to adata.var
-    """
-
     # Compute the deviance
     _devianceFeature(adata, fam, layer, batch, batch_key)
 
@@ -237,8 +213,3 @@ def highly_deviance_genes(
         n_genes: int = 5000,
     ):
     pass
-
-# TODO: 
-# add a function to plot the results
-# add a function to make DE analysis
-# Integrated the function into A user-difined Class
