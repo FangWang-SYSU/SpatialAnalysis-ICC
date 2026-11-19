@@ -3,24 +3,12 @@ import pandas as pd
 import scipy.sparse as sp
 
 def add_expression_score(adata, gene_list, score_name, method='mean'):
-    """
-    给定一组基因，计算每个spot/cell的表达得分（总和或均值），添加到obs中。
-
-    Parameters:
-    - adata: AnnData 对象
-    - gene_list: 要计算的基因列表
-    - score_name: 得分列名
-    - method: 'sum' 或 'mean'，决定是否对基因数量归一化
-    """
-    # 过滤掉不在 var_names 中的基因
     genes_present = [g for g in gene_list if g in adata.var_names]
     if not genes_present:
         raise ValueError(f"None of the genes in {gene_list} are found in adata.")
-
-    # 提取表达矩阵（稀疏 or 密集）
     expr = adata[:, genes_present].X
     if sp.issparse(expr):
-        score = expr.sum(axis=1).A1  # 转为一维 array
+        score = expr.sum(axis=1).A1 
     else:
         score = expr.sum(axis=1)
 
@@ -58,8 +46,6 @@ def plot_region_scores_bar(score_dict, fig, axs):
             'Region': [f"region_{i+1}" for i in range(len(scores))],
             'Score': scores
         })
-
-        # 按 Score 升序排序
         region_df = region_df.sort_values(by='Score', ascending=True).reset_index(drop=True)
 
         sns.barplot(
