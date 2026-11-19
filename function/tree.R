@@ -35,25 +35,22 @@ run_infercnv_subcluster_tree <- function(obj,
             scale_color_manual(values = pal, na.value = "grey80")
     }
     
-    
-    # 1) 取矩阵与 subclusters
     mat <- obj@expr.data
     subc <- obj@tumor_subclusters[["subclusters"]][["all_observations"]]
     subc <- subc[lengths(subc) >= min_cells]
     clone <- names(subc)
     
     if (length(clone) == 0) {
-        stop("❌ ", sample_id, ": 没有满足 min_cells >= ", min_cells, " 的 subcluster。")
+        stop(sample_id, ": min_cells >= ", min_cells, " subcluster。")
     }
-    
-    # 2) 每个 clone 选一个代表细胞 + 一致性检查
+
     rep_cells <- character(0)
     clone_used <- character(0)
     
     for (cl in clone) {
         cells <- intersect(names(subc[[cl]]), colnames(mat))
         if (length(cells) == 0) {
-            if (verbose) message("⚠️ ", sample_id, " / ", cl, ": 无可用细胞，跳过。")
+            if (verbose) message("worning", sample_id, " / ", cl, ": no cells to used, next")
             next
         }
         
@@ -65,9 +62,9 @@ run_infercnv_subcluster_tree <- function(obj,
                 cc <- cells[j]
                 diff_n <- sum(mat[, cc] != ref)
                 if (diff_n > 0) {
-                    msg <- paste0("❌ ", sample_id, " / ", cl,
-                                  " 不一致细胞：", cc,
-                                  "（参考=", ref_cell, "，不同条目数=", diff_n, "）")
+                    msg <- paste0(sample_id, " / ", cl,
+                                  " differnet ", cc,
+                                  "Ref: ", ref_cell, ",different counts", diff_n, "）")
                     if (stop_on_inconsistent) stop(msg) else warning(msg)
                     break
                 }
@@ -79,7 +76,7 @@ run_infercnv_subcluster_tree <- function(obj,
     }
     
     if (length(rep_cells) == 0) {
-        stop("❌ ", sample_id, ": rep_cells 为空。")
+        stop("error ", sample_id, ": rep_cells is empty")
     }
     
     # -------------------------
@@ -106,38 +103,13 @@ run_infercnv_subcluster_tree <- function(obj,
     K <- ncol(CNV_mat)
  
     if (K <= make_tree_min_k) {
-        if (verbose) message("ℹ️ ", sample_id, ": K=", K, " <= ", make_tree_min_k, "，跳过建树。")
+        if (verbose) message(sample_id, ": K=", K, " <= ", make_tree_min_k, "next")
         return(invisible(list()))
     }
-    
-    # -------------------------
-    # 4) palette：clone -> 颜色；ref 灰色
-    # -------------------------
+ 
     pal <- cb_pattle[clone_named]
     pal_ref <- c(pal, ref = "grey70")
-    
-    # -------------------------
-    # 5) 建树 + 保存 + 返回 tip 顺序
-    # -------------------------
-    
-    # result_order <- list()
-    # 
-    # ## ---- unrooted ----
-    # dm.cell <- dist(t(CNV_mat))
-    # treeNJ <- NJ(dm.cell)
-    # 
-    # cnh3 <- as.phyDat(t(CNV_mat), type = "USER", levels = 0:max(CNV_mat))
-    # PARtree <- pratchet(cnh3, minit = 10, maxit = 100, k = 5)
-    # PARtree1 <- acctran(PARtree, cnh3)
-    # 
-    # p1 <- plot_tree(treeNJ, "NJ", pal)
-    # p2 <- plot_tree(PARtree1, "MP", pal)
-    # 
-    # 
-    # result_order$NJ_unrooted <- pal[get_tip_order(treeNJ)]
-    # result_order$MP_unrooted <-  pal[get_tip_order(PARtree1)]
-    # 
-    ## ---- rooted (add ref) ----
+ 
     CNV_mat2 <- cbind(CNV_mat, ref = rep(2, nrow(CNV_mat)))
     dm.cell2 <- dist(t(CNV_mat2))
     treeNJ2 <- NJ(dm.cell2)
