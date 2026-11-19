@@ -14,11 +14,8 @@ def sparse_binomial_deviance(X, sz):
     col_indices = X.indices
     term1 = np.bincount(col_indices, weights=X.data*(LP_data - L1P_data), minlength=X.shape[1])
     term2 = np.bincount(col_indices, weights=sz_expanded*L1P_data, minlength=X.shape[1])
-    
-    # Calculate ll_sat
+
     ll_sat = term1 + term2
-    
-    # 计算零模型
     feature_sums = X.sum(axis=0).A1
     sz_sum = sz.sum()
     p = feature_sums / sz_sum
@@ -148,10 +145,7 @@ def _check_input(m):
 
 
 def _devianceFeature(adata, fam = 'binomial', layer = None, batch = None, batch_key = None):
-    # TODO: 
-    # add the parameter for dense matrix option
 
-    # Check input parameters
     if fam not in ['binomial', 'poisson']:
         raise ValueError("fam must be 'binomial' or 'poisson'")
 
@@ -213,9 +207,3 @@ def _run_glmpca(adata, fam = 'poi', n_components = None, n_genes = None, layer =
     
     return glmpca(counts.T, n_components, fam = fam, penalty = penalty, verbose = verbose, 
                   ctl = {'maxIter': n_iter, 'eps': eps, 'optimizeTheta': True}, **kwargs)
-
-
-# TODO: 
-# add a function to plot the results
-# add a function to make DE analysis
-# Integrated the function into A user-difined Class
