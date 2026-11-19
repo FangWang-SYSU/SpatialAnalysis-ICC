@@ -38,7 +38,6 @@ def print_stats_table(stat: frozendict):
     for category, metrics in stat.items():
         print_section(category, metrics)
 
-    # 打印表格
     console.print(table)
 
 
