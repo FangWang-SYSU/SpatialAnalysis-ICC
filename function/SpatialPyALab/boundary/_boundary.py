@@ -14,31 +14,16 @@ from shapely.geometry import Polygon, MultiPolygon, MultiPoint, LinearRing
 from shapely import STRtree
 
 def split_geoms_to_polygons(alpha_shape):
-    """
-    将 alpha_shape 拆分为 Polygon 的列表[^1^]。
-    
-    参数：
-    alpha_shape: 由 alphashape.alphashape 函数生成的几何对象。
-    
-    返回值：
-    polygon_list: 包含所有 Polygon 对象的列表。
-    """
+
     polygon_list = []
-    
-    # 如果 alpha_shape 是 Polygon 类型，直接添加到列表中
     if isinstance(alpha_shape, Polygon):
         polygon_list.append(alpha_shape)
-    # 如果 alpha_shape 是 MultiPolygon 类型，提取其中的每个 Polygon
     elif isinstance(alpha_shape, MultiPolygon):
         polygon_list.extend(alpha_shape.geoms)
-    # 如果 alpha_shape 是其他类型（如 GeometryCollection），需要进一步处理
     else:
-        # 遍历 alpha_shape 的所有几何元素
         for geom in alpha_shape.geoms:
-            # 如果几何元素是 Polygon 类型，添加到列表中
             if isinstance(geom, Polygon):
                 polygon_list.append(geom)
-            # 如果几何元素是 MultiPolygon 类型，提取其中的每个 Polygon
             elif isinstance(geom, MultiPolygon):
                 polygon_list.extend(geom.geoms) 
     return polygon_list
@@ -54,22 +39,12 @@ def smooth_polygon(polygon, smooth_factor=0.1):
 
 
 def process_polygons(alpha_shape, smooth_factor=0.1, buffer_distance=1):
-    """
-    处理 alpha_shape, 包括平滑边界和合并重叠多边形。
-    """
-    # 拆分 alpha_shape 为 Polygon 列表
-    polygons = split_geoms_to_polygons(alpha_shape)
 
-    # 平滑每个多边形边界
+    polygons = split_geoms_to_polygons(alpha_shape)
     smoothed_polygons = [smooth_polygon(poly, smooth_factor) for poly in polygons]
 
-    # 对每个平滑后的多边形进行缓冲区操作
     buffered_polygons = [poly.buffer(buffer_distance) for poly in smoothed_polygons]
-
-    # 合并重叠的多边形
     merged_polygon = unary_union(buffered_polygons)
-
-    # 修复可能的拓扑错误
     if not merged_polygon.is_valid:
         merged_polygon = merged_polygon.buffer(0)
 
@@ -78,18 +53,6 @@ def process_polygons(alpha_shape, smooth_factor=0.1, buffer_distance=1):
 from shapely.geometry import Point, Polygon, MultiPolygon
 
 def filter_polygons_by_cell_count(cell_coords, threshold, polygons):
-    """
-    根据每个多边形内的细胞数进行筛选，返回包含细胞数超过阈值的多边形。
-    
-    参数：
-        cell_coords: np.ndarray 或 list of [x, y]，细胞坐标。
-        threshold: int,保留多边形所需的最小细胞数量。
-        polygons: shapely MultiPolygon 或 list of Polygon。
-    
-    返回：
-        list of Polygon, 满足条件的多边形。
-    """
-    # 转换为 shapely 的 Point 列表
     cell_points = [Point(xy) for xy in cell_coords]
 
     if isinstance(polygons, MultiPolygon):
@@ -144,29 +107,13 @@ import numpy as np
 from scipy.stats import binned_statistic_2d
 
 def filter_sparse_points(points, x_bins=50, y_bins=50, density_threshold=2):
-    """
-    根据网格密度过滤稀疏点，只保留聚集区域。
-
-    参数:
-        points: ndarray (N, 2)，二维坐标数组。
-        x_bins: int，X方向网格数量。
-        y_bins: int，Y方向网格数量。
-        density_threshold: int，密度阈值，小于等于该值的视为稀疏点。
-
-    返回:
-        core_points: ndarray，密度高的点。
-        sparse_points: ndarray，密度低的点。
-    """
-    # 统计每个网格中的点数
     stat, x_edges, y_edges, _ = binned_statistic_2d(
         points[:, 0], points[:, 1], None, statistic='count', bins=[x_bins, y_bins]
     )
 
-    # 找出每个点所在网格的密度
     x_bin_idx = np.digitize(points[:, 0], x_edges) - 1
     y_bin_idx = np.digitize(points[:, 1], y_edges) - 1
 
-    # 避免越界
     valid = (x_bin_idx >= 0) & (x_bin_idx < x_bins) & (y_bin_idx >= 0) & (y_bin_idx < y_bins)
     x_bin_idx = x_bin_idx[valid]
     y_bin_idx = y_bin_idx[valid]
@@ -174,7 +121,6 @@ def filter_sparse_points(points, x_bins=50, y_bins=50, density_threshold=2):
 
     grid_density = stat[x_bin_idx, y_bin_idx]
 
-    # 按密度阈值筛选
     core_points = points_valid[grid_density > density_threshold]
     sparse_points = points_valid[grid_density <= density_threshold]
 
@@ -187,14 +133,9 @@ from shapely.ops import unary_union
 def remove_intersections(polygons):
     cleaned_polygons = []
     for i, poly in enumerate(polygons):
-        # 组合其他所有 polygon
         others = polygons[:i] + polygons[i+1:]
         others_union = unary_union(others)
-
-        # 去掉交集部分
         diff = poly.difference(others_union)
-
-        # 有可能 diff 仍是多个部分
         if diff.is_empty:
             continue
         elif diff.geom_type == 'Polygon':
@@ -204,8 +145,6 @@ def remove_intersections(polygons):
     return cleaned_polygons
 
 
-
- 
 def plot_four_panels(
     sparse_points, 
     target_coords, 
@@ -214,24 +153,6 @@ def plot_four_panels(
     final_polys, 
     figsize=(16, 5)
 ):
-    """
-    绘制四联图：稀疏点过滤 / Alpha Shape / 平滑多边形 / 筛选多边形
-
-    参数
-    ----
-    sparse_points : np.ndarray
-        稀疏点坐标 (N, 2)
-    target_coords : np.ndarray
-        目标簇坐标 (M, 2)
-    alpha_shape : shapely Polygon or MultiPolygon
-        Alpha Shape 结果
-    polys_sorted : list of shapely.Polygon
-        平滑后的多边形
-    final_polys : list of shapely.Polygon
-        最终筛选的多边形
-    figsize : tuple
-        图像大小 (默认 (16,5))
-    """
 
     fig, axs = plt.subplots(1, 4, figsize=figsize)
 
