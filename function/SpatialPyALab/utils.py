@@ -18,15 +18,13 @@ def compute_px_by_um(adata,
     for i in range(n_pairs):
 
         idx1 = indices[i]
-        idx2 = (indices[(i + 1) % n_pairs])  # 避免相同点
+        idx2 = (indices[(i + 1) % n_pairs])  
 
-        # 坐标提取
         p1_before = adata.obsm[old_key][idx1]
         p2_before = adata.obsm[old_key][idx2]
         p1_after = adata.obsm[new_key][idx1]
         p2_after = adata.obsm[new_key][idx2]
 
-        # 计算前后的像素距离
         d_px_before = np.linalg.norm(p2_before - p1_before)
         d_um = d_px_before / px_by_um_before
         d_px_after = np.linalg.norm(p2_after - p1_after)
@@ -37,8 +35,6 @@ def compute_px_by_um(adata,
     px_by_um = np.mean(px_by_um_list)
 
     return px_by_um
-
-
 
 
 def _mu_scale_from_fc_uns(adata, prefix: str = "fc", value_path=("puck_variables", "coord_by_um")) -> float:
@@ -90,7 +86,7 @@ def add_mu_scale(
         try:
             df = pd.read_csv(px_by_um_csv_path)
             if "px_by_um" not in df.columns:
-                raise ValueError(f"CSV 缺少列 'px_by_um'：{px_by_um_csv_path}")
+                raise ValueError(f"CSV 'px_by_um' {px_by_um_csv_path}")
             mu_scale_before = float(df["px_by_um"].mean())
         except Exception as e:
             mu_scale_before = None
@@ -116,8 +112,6 @@ def add_mu_scale(
         adata.uns["mu_scale"][new_key] = mu_scale_new
 
     return adata
-
-
 
 
 import pandas as pd
